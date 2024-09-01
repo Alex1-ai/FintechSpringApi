@@ -72,6 +72,20 @@ public class UserController {
         return userService.creditAccount(request);
     }
 
+
+    @Operation(
+            summary = "Login",
+            description = "Login into your account."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
+    @PostMapping("/login")
+    public BankResponse login(@RequestBody LoginDto loginDto){
+        return userService.login(loginDto);
+    }
+
     @Operation(
             summary = "Debit Account",
             description = "Debit a particular User account."
