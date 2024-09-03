@@ -5,7 +5,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-#    port: 465
+    #    port: 465
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
@@ -19,10 +19,9 @@ spring:
     name: bank-app
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/bank
+    url: ${DATABASE_URL}  # Using the environment variable for the database URL
+#    url: "jdbc:postgresql://alexanderemmanuel1719:NBH1lDt5hOIA@ep-calm-sound-a572wcmv.us-east-2.aws.neon.tech/bank?sslmode=require"
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -37,10 +36,3 @@ logging:
 app:
   jwt-secret: ${JWT_SECRET}
   jwt-expiration: ${JWT_EXPIRATION}
-
-
-
-
-
-
-
