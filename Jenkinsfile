@@ -21,6 +21,20 @@ pipeline {
             steps {
                 script {
                     echo 'This is a test stage to verify Jenkins pipeline setup.'
+                    sh "mvn test"
+                }
+            }
+        }
+
+        stage("build") {
+            when {
+                expression {
+                    BRANCH_NAME == 'main'
+                }
+            }
+            steps {
+                script {
+                    buildJar()
                 }
             }
         }
