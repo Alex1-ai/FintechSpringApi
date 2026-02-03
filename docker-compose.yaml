@@ -1,0 +1,3 @@
+services:
+  bank-api:
+    image:

@@ -15,7 +15,7 @@ pipeline {
     }
     environment {
         // Define any environment variables here
-        DOCKER_IMAGE = 'chidi123/bank-app:1.0'
+        DOCKER_IMAGE = 'chidi123/bank-app:1.2'
     }
 
     stages {
@@ -31,7 +31,7 @@ pipeline {
         stage("build") {
             steps {
                 script {
-                    buildJar()
+                    sh "mvn clean package -DskipTests"
                 }
             }
         }
@@ -55,7 +55,7 @@ pipeline {
             steps {
                 // Deploy the application (this is a placeholder, replace with actual deployment steps)
                 script {
-                    def dockerCmd = "docker run -d -p 8080:8080 ${DOCKER_IMAGE}"
+                    def dockerCmd = "docker run --env-file .env -d -p 8080:8080 ${DOCKER_IMAGE}"
                     echo 'Deploying the Bank API...'
                     sshagent(['ec2-server-key']) {
 
