@@ -32,12 +32,12 @@ jobs:
           java-version: 17
 
       - name: Unit Tests
-        run: mvn -B test --file pom.xml
+        run: mvn test
 
       - name: Build the application
         run: |
           mvn clean
-          mvn -B package --file pom.xml
+          mvn package
 
       #      - name: Debug Tag
       #        run: echo ' Tag ${{ secrets.DOCKER_HUB_USERNAME }}/paypal-integration:latest'
