@@ -10,7 +10,9 @@ library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
 
 pipeline {
     agent any
-
+    tools {
+        maven 'maven-3.9'
+    }
     environment {
         // Define any environment variables here
         DOCKER_IMAGE = 'chidi123/bank-app:1.0'
