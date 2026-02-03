@@ -36,3 +36,11 @@ logging:
 app:
   jwt-secret: ${JWT_SECRET}
   jwt-expiration: ${JWT_EXPIRATION}
+  frontend-url: ${FRONTEND_URL}
+frontend:
+  url: ${FRONTEND_URL}
+
+
+  # After starting the server you navigate to this url in your browser
+
+  # * http://localhost:8080/swagger-ui/index.html

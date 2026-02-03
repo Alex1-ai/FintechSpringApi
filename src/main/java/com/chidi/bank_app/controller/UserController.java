@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = {"${frontend.url}"})
 @Tag(name = "User Account Management APIs")
 public class UserController {
 
@@ -27,11 +28,9 @@ public class UserController {
     @PostMapping
     public BankResponse createAccount(
             @RequestBody UserRequest userRequest
-            ){
+    ){
         return userService.createAccount(userRequest);
-
     }
-
 
     @Operation(
             summary = "Balance Enquiry",
@@ -42,7 +41,8 @@ public class UserController {
             description = "Http status 200 SUCCESS"
     )
     @GetMapping("/balanceEnquiry")
-    public BankResponse balanceEnquiry(@RequestBody EnquiryRequest request){
+    public BankResponse balanceEnquiry(@RequestParam String accountNumber){
+        EnquiryRequest request = new EnquiryRequest(accountNumber);
         return userService.balanceEnquiry(request);
     }
 
@@ -55,7 +55,8 @@ public class UserController {
             description = "Http status 200 SUCCESS"
     )
     @GetMapping("/nameEnquiry")
-    public String nameEnquiry(@RequestBody EnquiryRequest request){
+    public String nameEnquiry(@RequestParam String accountNumber){
+        EnquiryRequest request = new EnquiryRequest(accountNumber);
         return userService.nameEnquiry(request);
     }
 
@@ -71,7 +72,6 @@ public class UserController {
     public BankResponse creditAccount(@RequestBody CreditDebitRequest request){
         return userService.creditAccount(request);
     }
-
 
     @Operation(
             summary = "Login",
@@ -95,13 +95,13 @@ public class UserController {
             description = "Http status 200 SUCCESS"
     )
     @PostMapping("/debit")
-    public BankResponse debitAccount(@RequestBody CreditDebitRequest request ){
+    public BankResponse debitAccount(@RequestBody CreditDebitRequest request){
         return userService.debitAccount(request);
     }
 
     @Operation(
             summary = "Transfer",
-            description = "Make Transfer money from one Account to another Account."
+            description = "Transfer money from one account to another."
     )
     @ApiResponse(
             responseCode = "200",
