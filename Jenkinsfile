@@ -13,14 +13,37 @@ pipeline {
     tools {
         maven 'maven-3.9'
     }
-    environment {
-        // Define any environment variables here
-        DOCKER_IMAGE = 'chidi123/bank-app:1.2'
-    }
+//     environment {
+//         // Define any environment variables here
+//         DOCKER_IMAGE = 'chidi123/bank-app:1.2'
+//     }
+
+
 
     stages {
 
+        stage('increment version') {
+//             when {
+//                 expression {
+//                     BRANCH_NAME == 'main'
+//                 }
+//             }
+            steps {
+                script {
+                    echo "incrementing app version...."
 
+                    sh """
+                    mvn build-helper:parse-version versions:set \
+                      -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                      versions:commit
+                    """
+
+                    def matcher = readFile('pom.xml') =~ '<version>(.*)</version>'
+                    def version = matcher[0][1]
+                    env.IMAGE_NAME = "${version}-${BUILD_NUMBER}"
+                }
+            }
+        }
         stage('test') {
             steps {
                 script {
@@ -74,12 +97,43 @@ pipeline {
                 }
             }
         }
+        stage("commit version update") {
+
+
+            steps {
+                script {
+                    withCredentials([
+                            usernamePassword(
+                                    credentialsId: 'github-access-token-credentials',
+                                    usernameVariable: 'GIT_USER',
+                                    passwordVariable: 'GIT_PASS'
+                            )
+                    ]) {
+                        sh '''
+                            set -e
+
+                            # Configure git
+                            git config --global user.email "jenkins@example.com"
+                            git config --global user.name "jenkins"
+
+                            # Check current branch/state
+                            echo "Current branch/state:"
+                            git branch -a || true
+                            git status
+
+                            # Commit changes on detached HEAD
+                            git add pom.xml
+                            git commit -m "ci: version bump" || echo "No changes to commit"
+
+                            # Push directly to main (force if needed)
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/Alex1-ai/Quiz-App.git HEAD:jenkins-job
+                        '''
+                    }
+                }
+            }
+        }
+
     }
 
-    post {
-        always {
-            // Clean up resources, send notifications, etc.
-            echo 'Pipeline completed.'
-        }
-    }
+
 }
