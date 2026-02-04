@@ -60,6 +60,7 @@ pipeline {
                     def shellCmd = "bash ./server-cmds.sh ${DOCKER_IMAGE}"
                     def ec2Instance = "ec2-user@18.205.238.229"
                     echo 'Deploying the Bank API...'
+
                     sshagent(['ec2-server-key']) {
                         sh "scp server-cmds.sh ${ec2Instance}:/home/ec2-user"
                         sh "scp docker-compose.yaml ${ec2Instance}:/home/ec2-user"
