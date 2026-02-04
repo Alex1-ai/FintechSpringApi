@@ -40,7 +40,7 @@ pipeline {
 
                     def matcher = readFile('pom.xml') =~ '<version>(.*)</version>'
                     def version = matcher[0][1]
-                    env.IMAGE_NAME = "${version}-${BUILD_NUMBER}"
+                    env.IMAGE_NAME = "chidi123/bank-app:${version}-${BUILD_NUMBER}"
                 }
             }
         }
@@ -68,9 +68,9 @@ pipeline {
                     // docker.build(DOCKER_IMAGE)
 
                         echo "Building a docker application"
-                        buildImage(env.DOCKER_IMAGE)
+                        buildImage "${IMAGE_NAME}"
                         dockerLogin()
-                        dockerPush(env.DOCKER_IMAGE)
+                        dockerPush "${IMAGE_NAME}"
 
 
                 }
@@ -82,7 +82,7 @@ pipeline {
                 script {
 //                     def dockerCmd = "docker run --env-file .env -d -p 8080:8080 ${DOCKER_IMAGE}"
 //                     def dockerComposeCmd = "docker compose -f docker-compose.yaml up --detach"
-                    def shellCmd = "bash ./server-cmds.sh ${DOCKER_IMAGE}"
+                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
                     def ec2Instance = "ec2-user@18.205.238.229"
                     echo 'Deploying the Bank API...'
 
