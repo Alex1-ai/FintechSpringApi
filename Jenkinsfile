@@ -56,13 +56,16 @@ pipeline {
                 // Deploy the application (this is a placeholder, replace with actual deployment steps)
                 script {
 //                     def dockerCmd = "docker run --env-file .env -d -p 8080:8080 ${DOCKER_IMAGE}"
-                    def dockerComposeCmd = "docker compose -f docker-compose.yaml up --detach"
+//                     def dockerComposeCmd = "docker compose -f docker-compose.yaml up --detach"
+                    def shellCmd = "bash ./server-cmds.sh ${DOCKER_IMAGE}"
+                    def ec2Instance = "ec2-user@18.205.238.229"
                     echo 'Deploying the Bank API...'
                     sshagent(['ec2-server-key']) {
-                        sh "scp docker-compose.yaml ec2-user@18.205.238.229:/home/ec2-user"
+                        sh "scp server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                        sh "scp docker-compose.yaml ${ec2Instance}:/home/ec2-user"
 
                         // some block
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@18.205.238.229 ${dockerComposeCmd}"
+                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
 
                     }
                 }

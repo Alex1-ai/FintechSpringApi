@@ -1,6 +1,6 @@
 services:
   bank-api:
-    image: chidi123/bank-app:1.2
+    image: ${IMAGE}
     ports:
       - 8080:8080
     env_file:
