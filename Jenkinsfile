@@ -126,7 +126,7 @@ pipeline {
                             git commit -m "ci: version bump" || echo "No changes to commit"
 
                             # Push directly to main (force if needed)
-                            git push https://${GIT_USER}:${GIT_PASS}@github.com/Alex1-ai/Quiz-App.git HEAD:jenkins-job
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/Alex1-ai/FintechSpringApi.git HEAD:main
                         '''
                     }
                 }
