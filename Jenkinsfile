@@ -114,6 +114,11 @@ pipeline {
 
        }
        stage('Deploy') {
+            environment {
+                 DOCKER_CRED = credentials("docker-hub-repo")
+
+
+            }
             steps {
                 // Deploy the application (this is a placeholder, replace with actual deployment steps)
                 script {
@@ -125,7 +130,7 @@ pipeline {
                     echo "${EC2_PUBLIC_IP}"
 
 
-                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
+                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME} ${DOCKER_CRED_USR} ${DOCKER_CRED_PSW}"
                     def ec2Instance = "ec2-user@${EC2_PUBLIC_IP}"
 
 
@@ -169,7 +174,7 @@ pipeline {
                             git commit -m "ci: version bump" || echo "No changes to commit"
 
                             # Push directly to main (force if needed)
-                            git push https://${GIT_USER}:${GIT_PASS}@github.com/Alex1-ai/FintechSpringApi.git HEAD:main
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/Alex1-ai/FintechSpringApi.git HEAD:feature/sshagent-terraform
                         '''
                     }
                 }
