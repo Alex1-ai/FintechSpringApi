@@ -189,7 +189,7 @@ EOF
                             git commit -m "ci: version bump" || echo "No changes to commit"
 
                             # Push directly to main (force if needed)
-                            git push https://${GIT_USER}:${GIT_PASS}@github.com/Alex1-ai/FintechSpringApi.git HEAD:feature/sshagent-terraform
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/Alex1-ai/FintechSpringApi.git HEAD:feature/terraform-remote-backend
                         '''
                     }
                 }
