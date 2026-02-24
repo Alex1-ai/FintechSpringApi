@@ -138,6 +138,21 @@ pipeline {
                         sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
                         sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
 
+
+                        // Create .env file on the EC2 instance
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${ec2Instance} '
+                                cat > /home/ec2-user/.env << EOF
+DATABASE_URL=${DATABASE_URL}
+MAIL_USERNAME=${MAIL_USERNAME}
+MAIL_PASSWORD=${MAIL_PASSWORD}
+JWT_SECRET=${JWT_SECRET}
+JWT_EXPIRATION=${JWT_EXPIRATION}
+FRONTEND_URL=${FRONTEND_URL}
+EOF
+                            '
+                        """
+
                         // some block
                         sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
 
