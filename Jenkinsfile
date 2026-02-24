@@ -13,10 +13,15 @@ pipeline {
     tools {
         maven 'maven-3.9'
     }
-//     environment {
-//         // Define any environment variables here
-//         DOCKER_IMAGE = 'chidi123/bank-app:1.2'
-//     }
+    environment {
+        // Define any environment variables here
+        DATABASE_URL = credentials("DATABASE_URL")
+        MAIL_USERNAME = credentials("MAIL_USERNAME")
+        MAIL_PASSWORD = credentials("MAIL_PASSWORD")
+        JWT_SECRET = credentials("JWT_SECRET")
+        JWT_EXPIRATION = credentials("JWT_EXPIRATION")
+        FRONTEND_URL = credentials("FRONTEND_URL")
+    }
 
 
 
@@ -76,19 +81,55 @@ pipeline {
                 }
             }
         }
+
+
+
+       stage("provision server") {
+//            tf proviosion server
+            environment {
+                AWS_ACCESS_KEY_ID = credentials("jenkins_aws_access_key_id")
+                AWS_SECRET_ACCESS_KEY = credentials("jenkins_aws_secret_access_key")
+                TF_VAR_env_prefix = "test"
+            }
+            steps {
+               script {
+                  dir('terraform'){
+                     sh "terraform init"
+                     sh "terraform apply --auto-approve"
+                     EC2_PUBLIC_IP = sh(
+                        script: "terraform output ec2_public_ip"
+                        returnStdout: true
+                        ).trim()
+
+
+                  }
+
+
+               }
+
+
+            }
+
+       }
        stage('Deploy') {
             steps {
                 // Deploy the application (this is a placeholder, replace with actual deployment steps)
                 script {
+                    echo "waiting for EC2 server to initialize"
+                    sleep(time: 90, unit: "SECONDS")
 //                     def dockerCmd = "docker run --env-file .env -d -p 8080:8080 ${DOCKER_IMAGE}"
 //                     def dockerComposeCmd = "docker compose -f docker-compose.yaml up --detach"
-                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
-                    def ec2Instance = "ec2-user@18.205.238.229"
                     echo 'Deploying the Bank API...'
+                    echo "$(EC2_PUBLIC_IP)"
 
-                    sshagent(['ec2-server-key']) {
-                        sh "scp server-cmds.sh ${ec2Instance}:/home/ec2-user"
-                        sh "scp docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+
+                    def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
+                    def ec2Instance = "ec2-user@$(EC2_PUBLIC_IP)"
+
+
+                    sshagent(['server-ssh-key']) {
+                        sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                        sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
 
                         // some block
                         sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
