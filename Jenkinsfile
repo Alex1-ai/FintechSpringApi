@@ -122,11 +122,11 @@ pipeline {
 //                     def dockerCmd = "docker run --env-file .env -d -p 8080:8080 ${DOCKER_IMAGE}"
 //                     def dockerComposeCmd = "docker compose -f docker-compose.yaml up --detach"
                     echo 'Deploying the Bank API...'
-                    echo "$(EC2_PUBLIC_IP)"
+                    echo "${EC2_PUBLIC_IP}"
 
 
                     def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
-                    def ec2Instance = "ec2-user@$(EC2_PUBLIC_IP)"
+                    def ec2Instance = "ec2-user@${EC2_PUBLIC_IP}"
 
 
                     sshagent(['server-ssh-key']) {
