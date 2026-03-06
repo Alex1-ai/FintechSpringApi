@@ -78,6 +78,13 @@
 #  vars_files:
 #    - project-vars
   tasks:
+    - name: Copy docker compose
+      copy:
+        src: docker-compose.yaml
+        dest: /home/chidi/docker-compose.yaml
+        owner: chidi
+        group: docker
+        mode: '0644'
 #    - name: Copy docker compose
 #      copy:
 #        src: /home/alexa/Ansible-Learning/docker-compose.yaml
