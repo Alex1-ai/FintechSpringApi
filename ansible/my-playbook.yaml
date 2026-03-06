@@ -75,24 +75,24 @@
   become: yes
   vars:
     ansible_python_interpreter: /usr/bin/python3
-  vars_files:
-    - project-vars
+#  vars_files:
+#    - project-vars
   tasks:
-    - name: Copy docker compose
-      copy:
-        src: /home/alexa/Ansible-Learning/docker-compose.yaml
-        dest: /home/chidi/docker-compose.yaml
+#    - name: Copy docker compose
+#      copy:
+#        src: /home/alexa/Ansible-Learning/docker-compose.yaml
+#        dest: /home/chidi/docker-compose.yaml
+#
+#    - name: Copy environment file
+#      copy:
+#        src: /home/alexa/Ansible-Learning/.env
+#        dest: /home/chidi/.env
 
-    - name: Copy environment file
-      copy:
-        src: /home/alexa/Ansible-Learning/.env
-        dest: /home/chidi/.env
-
-    - name: Docker login
-      docker_login:
-        registry_url: https://index.docker.io/v1/
-        username: chidi123
-        password: "{{ docker_password }}"
+#    - name: Docker login
+#      docker_login:
+#        registry_url: https://index.docker.io/v1/
+#        username: chidi123
+#        password: "{{ docker_password }}"
 
     - name: Start docker compose
       community.docker.docker_compose_v2:
