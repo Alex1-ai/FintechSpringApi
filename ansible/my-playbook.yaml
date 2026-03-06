@@ -1,0 +1,100 @@
+---
+- name: Install Python3, pip and docker
+  # hosts:
+  hosts: all
+  become: yes
+  become_user: root
+  gather_facts: False
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Make sure python3-pip and docker are installed
+      dnf:
+        name:
+          - python3-pip
+          - docker
+        update_cache: yes
+        state: present
+
+- name: Install Docker Compose plugin
+  # hosts: aws_ec2
+  hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Create docker cli-plugins directory
+      file:
+        path: /usr/libexec/docker/cli-plugins
+        state: directory
+        mode: '0755'
+
+    - name: Download docker compose plugin
+      get_url:
+        url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64
+        dest: /usr/libexec/docker/cli-plugins/docker-compose
+        mode: '0755'
+
+- name: Start Docker service
+  # hosts: aws_ec2
+  hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Start Docker daemon
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+    - name: Install docker python modules
+      pip:
+        name:
+          - "docker<7"
+          - "docker-compose"
+          - "urllib3<2"
+        executable: pip3
+        extra_args: "--ignore-installed"
+
+- name: Create new linux user
+  # hosts: aws_ec2
+  hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Create new linux user
+      user:
+        name: chidi
+        groups: adm,docker
+        append: yes
+
+- name: Start docker containers
+  # hosts: aws_ec2
+  hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  vars_files:
+    - project-vars
+  tasks:
+    - name: Copy docker compose
+      copy:
+        src: /home/alexa/Ansible-Learning/docker-compose.yaml
+        dest: /home/chidi/docker-compose.yaml
+
+    - name: Copy environment file
+      copy:
+        src: /home/alexa/Ansible-Learning/.env
+        dest: /home/chidi/.env
+
+    - name: Docker login
+      docker_login:
+        registry_url: https://index.docker.io/v1/
+        username: chidi123
+        password: "{{ docker_password }}"
+
+    - name: Start docker compose
+      community.docker.docker_compose_v2:
+        project_src: /home/chidi
+        state: present
