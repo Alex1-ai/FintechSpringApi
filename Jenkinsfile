@@ -40,7 +40,7 @@ pipeline {
                         withCredentials([sshUserPrivateKey(credentialsId: "ec2-server-key", keyFileVariable: "keyfile", usernameVariable: "user")]){
                                remote.user = user
                                remote.identityFile = keyfile
-                               sshCommand remote: remote, commands: "ls -l"
+                               sshCommand remote: remote, command: "ls -l"
 
                            }
 
